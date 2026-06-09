@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookVerse - Kumpulan Buku Terpopuler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen flex flex-col">
+
+    <header class="bg-indigo-600 text-white shadow-md">
+        <div class="container mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-3xl font-bold tracking-wide">📚 BookVerse</h1>
+            
+            <div class="w-full md:w-96 flex gap-2">
+                <input type="text" id="searchInput" placeholder="Cari judul buku atau penulis..." 
+                       class="w-full px-4 py-2 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <button id="searchBtn" class="bg-indigo-800 hover:bg-indigo-900 px-5 py-2 rounded-lg font-semibold transition">
+                    Cari
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-10 flex-grow">
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Daftar Buku Rekomendasi</h2>
+            <p class="text-gray-600">Menampilkan buku secara real-time menggunakan Google Books API</p>
+        </div>
+
+        <div id="loading" class="text-center text-xl font-semibold text-indigo-600 my-10">
+            Memuat data buku...
+        </div>
+
+        <div id="bookContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 hidden">
+            </div>
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 text-center py-4 text-sm mt-auto">
+        &copy; 2026 Maman
+    </footer>
+
+    <script>
+        const bookContainer = document.getElementById('bookContainer');
+        const loadingElement = document.getElementById('loading');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+
+        // Fungsi mengambil data dari Google Books API
+        async function fetchBooks(query = 'web development') {
+            loadingElement.classList.remove('hidden');
+            bookContainer.classList.add('hidden');
+            
+            try {
+                // Fetching data (Syarat Nilai 90)
+                const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=12`);
+                const data = await response.json();
+                
+                displayBooks(data.items);
+            } catch (error) {
+                console.error("Gagal memuat data API:", error);
+                loadingElement.innerHTML = "<p class='text-red-500'>Gagal memuat data. Coba lagi nanti.</p>";
+            }
+        }
+
+    
+        function displayBooks(books) {
+            bookContainer.innerHTML = '';
+            
+            if (!books || books.length === 0) {
+                loadingElement.innerHTML = "<p class='text-gray-500'>Buku tidak ditemukan.</p>";
+                return;
+            }
+
+            books.forEach(item => {
+                const info = item.volumeInfo;
+                
+                // Atribut Minimal: Nama (Judul), Kategori/Penulis, Deskripsi
+                const title = info.title || 'Judul Tidak Tersedia';
+                const authors = info.authors ? info.authors.join(', ') : 'Penulis Anonim';
+                const category = info.categories ? info.categories[0] : 'Umum';
+                const description = info.description ? info.description.substring(0, 120) + '...' : 'Tidak ada deskripsi singkat untuk buku ini.';
+                const thumbnail = info.imageLinks ? info.imageLinks.thumbnail : 'https://via.placeholder.com/150x200?text=No+Cover';
+
+                // Membuat element Card HTML secara dinamis
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300 flex flex-col border border-gray-100";
+                
+                card.innerHTML = `
+                    <div class="h-56 bg-gray-200 flex items-center justify-center p-4">
+                        <img src="${thumbnail}" alt="${title}" class="h-full object-contain shadow-md rounded">
+                    </div>
+                    <div class="p-5 flex flex-col flex-grow">
+                        <span class="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-1">${category}</span>
+                        <h3 class="text-lg font-bold text-gray-900 line-clamp-2 mb-1" title="${title}">${title}</h3>
+                        <p class="text-sm text-gray-500 mb-3">Oleh: <span class="font-medium">${authors}</span></p>
+                        <p class="text-sm text-gray-600 flex-grow">${description}</p>
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <a href="${info.infoLink}" target="_blank" class="block text-center bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold py-2 rounded-lg transition text-sm">
+                                Detail Selengkapnya
+                            </a>
+                        </div>
+                    </div>
+                `;
+                bookContainer.appendChild(card);
+            });
+
+            loadingElement.classList.add('hidden');
+            bookContainer.classList.remove('hidden');
+        }
+
+        // Event Listener untuk Tombol Cari
+        searchBtn.addEventListener('click', () => {
+            const query = searchInput.value.trim();
+            if (query) fetchBooks(query);
+        });
+
+        // Event Listener untuk tombol Enter di Keyboard
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'key' || e.key === 'Enter') {
+                const query = searchInput.value.trim();
+                if (query) fetchBooks(query);
+            }
+        });
+
+        // Load data pertama kali saat halaman dibuka
+        fetchBooks();
+    </script>
+</body>
+</html>
