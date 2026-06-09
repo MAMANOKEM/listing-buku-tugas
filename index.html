@@ -32,11 +32,6 @@
     </header>
 
     <main class="container mx-auto px-4 py-8 flex-grow max-w-6xl">
-        
-        <div class="text-center mb-8">
-            <h2 id="pageTitle" class="text-3xl font-bold text-gray-800 mb-2">Daftar Buku Terpopuler</h2>
-            <p id="pageDescription" class="text-gray-600">Menampilkan 10 daftar buku pilihan terbaik untuk Anda</p>
-        </div>
 
         <div id="searchSection" class="max-w-xl mx-auto mb-8 flex gap-2 hidden">
             <input type="text" id="searchInput" placeholder="Ketik judul buku atau penulis..." 
@@ -93,8 +88,6 @@
         const searchSection = document.getElementById('searchSection');
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
-        const pageTitle = document.getElementById('pageTitle');
-        const pageDescription = document.getElementById('pageDescription');
         const favCountBadge = document.getElementById('fav-count');
 
         const bookModal = document.getElementById('bookModal');
@@ -111,6 +104,24 @@
         let favoriteBooks = JSON.parse(localStorage.getItem('favBooks')) || [];
         let currentLoadedBooks = [];
 
+        const dataBeranda = [
+            { id: "b1", title: "Eloquent JavaScript", authors: "Marijn Haverbeke", category: "Programming", description: "Buku panduan mendalam tentang pemrograman JavaScript murni beserta manipulasi DOM di web browser.", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/51MS1nHX6mL._SX373_BO1,204,203,200_.jpg", publishedDate: "2018-12-04", infoLink: "https://eloquentjavascript.net/" },
+            { id: "b2", title: "JavaScript: The Good Parts", authors: "Douglas Crockford", category: "Programming", description: "Mengupas fitur-fitur terbaik dari bahasa pemrograman JavaScript yang wajib dipahami oleh setiap web developer profesional.", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/5131OWtQv7L._SX379_BO1,204,203,200_.jpg", publishedDate: "2008-05-01", infoLink: "#" },
+            { id: "b3", title: "You Don't Know JS Yet", authors: "Kyle Simpson", category: "Programming", description: "Buku seri legendaris yang membahas cara kerja mesin asynchronous, scope, closure, dan objek internal JavaScript secara menyeluruh.", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/41T5H8u7fUL._SX331_BO1,204,203,200_.jpg", publishedDate: "2020-01-25", infoLink: "#" },
+            { id: "b4", title: "Clean Code", authors: "Robert C. Martin", description: "Panduan menulis kode yang rapi, efisien, mudah dibaca, dan mudah dirawat dalam pengembangan software berskala besar.", category: "Programming", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/41xShbXbyZL._SX376_BO1,204,203,200_.jpg", publishedDate: "2008-08-01", infoLink: "#" },
+            { id: "b5", title: "Design Patterns", authors: "Erich Gamma", description: "Solusi-solusi standar arsitektur pemrograman berorientasi objek (OOP) untuk mengatasi masalah software yang sering muncul.", category: "Programming", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/51szb57QvXL._SX396_BO1,204,203,200_.jpg", publishedDate: "1994-10-31", infoLink: "#" },
+            { id: "b6", title: "Introduction to Algorithms", authors: "Thomas H. Cormen", description: "Buku panduan komprehensif mengenai struktur data dan algoritma komputer yang menjadi fondasi dasar rekayasa perangkat lunak.", category: "Programming", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/41vOepSpAsL._SX373_BO1,204,203,200_.jpg", publishedDate: "2009-07-31", infoLink: "#" }
+        ];
+
+        const dataRekomendasi = [
+            { id: "r1", title: "Atomic Habits", authors: "James Clear", category: "Self Improvement", description: "Cara mudah dan terbukti untuk membangun kebiasaan baik dan menghilangkan kebiasaan buruk demi perubahan hidup yang drastis.", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/51-nXsSRfZL._SX329_BO1,204,203,200_.jpg", publishedDate: "2018-10-16", infoLink: "#" },
+            { id: "r2", title: "Filosofi Teras", authors: "Henry Manampiring", category: "Self Improvement", description: "Penerapan filsafat Yunani-Romawi kuno (Stoisisme) untuk menenangkan pikiran dan mental dalam menghadapi tantangan hidup modern.", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/41D-vWf9XLL._SX331_BO1,204,203,200_.jpg", publishedDate: "2018-11-26", infoLink: "#" },
+            { id: "r3", title: "Deep Work", authors: "Cal Newport", category: "Self Improvement", description: "Aturan dan panduan untuk tetap fokus secara mendalam di tengah dunia yang penuh dengan distraksi teknologi digital digital.", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/417yHQb9crL._SX331_BO1,204,203,200_.jpg", publishedDate: "2016-01-05", infoLink: "#" },
+            { id: "r4", title: "Start With Why", authors: "Simon Sinek", category: "Self Improvement", description: "Bagaimana para pemimpin besar menginspirasi semua orang untuk mengambil tindakan berdasarkan tujuan utama (Why).", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/516L-9NAsfL._SX324_BO1,204,203,200_.jpg", publishedDate: "2009-10-29", infoLink: "#" },
+            { id: "r5", title: "Mindset", authors: "Carol S. Dweck", category: "Self Improvement", description: "Mengungkap kekuatan pola pikir (growth mindset) dalam menentukan kesuksesan belajar, berbisnis, dan relasi kehidupan.", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/51j5GfR7YBL._SX324_BO1,204,203,200_.jpg", publishedDate: "2006-02-28", infoLink: "#" },
+            { id: "r6", title: "Grit", authors: "Angela Duckworth", category: "Self Improvement", description: "Mengapa rahasia pencapaian luar biasa bukanlah bakat, melainkan perpaduan antara hasrat (passion) dan kegigihan (perseverance).", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/41K99-Qf7LL._SX324_BO1,204,203,200_.jpg", publishedDate: "2016-05-03", infoLink: "#" }
+        ];
+
         function switchPage(page) {
             currentPage = page;
             
@@ -126,56 +137,19 @@
             searchSection.classList.add('hidden');
 
             if (page === 'beranda') {
-                pageTitle.innerText = "Daftar Buku Terpopuler";
-                pageDescription.innerText = "Menampilkan susunan grid 10 daftar buku teratas minggu ini";
-                fetchBooksFromAPI('novel best seller');
+                currentLoadedBooks = dataBeranda;
+                displayBooks(currentLoadedBooks);
             } else if (page === 'rekomendasi') {
-                pageTitle.innerText = "Rekomendasi Buku Pilihan";
-                pageDescription.innerText = "10 Buku rekomendasi khusus bertema Teknologi dan Pengembangan Diri";
-                fetchBooksFromAPI('self improvement teknologi');
+                currentLoadedBooks = dataRekomendasi;
+                displayBooks(currentLoadedBooks);
             } else if (page === 'pencarian') {
-                pageTitle.innerText = "Cari Buku Kesukaanmu";
-                pageDescription.innerText = "Gunakan kolom di bawah untuk mencari buku secara real-time";
                 searchSection.classList.remove('hidden');
-                bookContainer.innerHTML = `<div class="col-span-full text-center text-gray-500 py-10">Silakan masukkan kata kunci pencarian di atas.</div>`;
+                bookContainer.innerHTML = ``;
             } else if (page === 'favorit') {
-                pageTitle.innerText = "Buku Favorit Saya";
-                pageDescription.innerText = "Daftar koleksi buku yang telah Anda simpan";
                 currentLoadedBooks = favoriteBooks;
                 displayBooks(favoriteBooks);
             }
             updateFavBadge();
-        }
-
-        async function fetchBooksFromAPI(query) {
-            loadingElement.classList.remove('hidden');
-            bookContainer.classList.add('hidden');
-            
-            try {
-                const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10`);
-                const data = await response.json();
-                
-                currentLoadedBooks = (data.items || []).map(item => {
-                    const info = item.volumeInfo;
-                    return {
-                        id: item.id,
-                        title: info.title || 'Judul Tidak Tersedia',
-                        authors: info.authors ? info.authors.join(', ') : 'Penulis Anonim',
-                        category: info.categories ? info.categories[0] : 'Umum',
-                        description: info.description || 'Tidak ada deskripsi singkat untuk buku ini.',
-                        thumbnail: info.imageLinks ? (info.imageLinks.thumbnail || info.imageLinks.smallThumbnail) : 'https://via.placeholder.com/150x200?text=No+Cover',
-                        publishedDate: info.publishedDate || 'Tidak Diketahui',
-                        infoLink: info.infoLink || '#'
-                    };
-                });
-
-                displayBooks(currentLoadedBooks);
-            } catch (error) {
-                console.error(error);
-                bookContainer.innerHTML = `<div class="col-span-full text-center text-red-500 py-10">Gagal mengambil data dari server.</div>`;
-                loadingElement.classList.add('hidden');
-                bookContainer.classList.remove('hidden');
-            }
         }
 
         function displayBooks(books) {
@@ -184,7 +158,6 @@
             bookContainer.classList.remove('hidden');
 
             if (books.length === 0) {
-                bookContainer.innerHTML = `<div class="col-span-full text-center text-gray-500 py-10">Tidak ada buku untuk ditampilkan.</div>`;
                 return;
             }
 
@@ -288,15 +261,32 @@
             }
         }
 
+        function searchLocalBooks(query) {
+            const lowerQuery = query.toLowerCase();
+            const allBooks = [...dataBeranda, ...dataRekomendasi, ...favoriteBooks];
+            
+            const uniqueBooks = Array.from(new Map(allBooks.map(item => [item.id, item])).values());
+            
+            currentLoadedBooks = uniqueBooks.filter(book => 
+                book.title.toLowerCase().includes(lowerQuery) || 
+                book.authors.toLowerCase().includes(lowerQuery)
+            );
+            
+            displayBooks(currentLoadedBooks);
+            if(currentLoadedBooks.length === 0) {
+                bookContainer.innerHTML = `<div class="col-span-full text-center text-gray-500 py-10">Buku tidak ditemukan di dalam sistem data.</div>`;
+            }
+        }
+
         searchBtn.addEventListener('click', () => {
             const query = searchInput.value.trim();
-            if (query) fetchBooksFromAPI(query);
+            if (query) searchLocalBooks(query);
         });
 
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 const query = searchInput.value.trim();
-                if (query) fetchBooksFromAPI(query);
+                if (query) searchLocalBooks(query);
             }
         });
 
