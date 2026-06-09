@@ -34,7 +34,7 @@
     <main class="container mx-auto px-4 py-8 flex-grow max-w-6xl">
 
         <div id="searchSection" class="max-w-xl mx-auto mb-8 flex gap-2 hidden">
-            <input type="text" id="searchInput" placeholder="Ketik judul buku atau penulis..." 
+            <input type="text" id="searchInput" placeholder="Cari judul buku Indonesia, penulis, atau kategori..." 
                    class="w-full px-4 py-2 border-2 border-indigo-200 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400">
             <button id="searchBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition">
                 Cari
@@ -45,7 +45,7 @@
             Sedang memuat data buku...
         </div>
 
-        <div id="bookContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 justify-center">
+        <div id="bookContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">
         </div>
     </main>
 
@@ -57,7 +57,7 @@
             </div>
             <div class="p-6 flex flex-col md:flex-row gap-6">
                 <div class="w-full md:w-1/3 flex justify-center">
-                    <img id="modalImg" src="" alt="Cover Buku" class="h-60 object-contain shadow-lg rounded-lg">
+                    <img id="modalImg" src="" alt="Cover Buku" class="h-60 object-cover shadow-lg rounded-lg w-full max-w-[160px]">
                 </div>
                 <div class="w-full md:w-2/3 flex flex-col">
                     <h3 id="modalTitle" class="text-2xl font-bold text-gray-900 mb-1">Judul Buku</h3>
@@ -104,22 +104,27 @@
         let favoriteBooks = JSON.parse(localStorage.getItem('favBooks')) || [];
         let currentLoadedBooks = [];
 
-        const dataBeranda = [
-            { id: "b1", title: "Eloquent JavaScript", authors: "Marijn Haverbeke", category: "Programming", description: "Buku panduan mendalam tentang pemrograman JavaScript murni beserta manipulasi DOM di web browser.", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/51MS1nHX6mL._SX373_BO1,204,203,200_.jpg", publishedDate: "2018-12-04", infoLink: "https://eloquentjavascript.net/" },
-            { id: "b2", title: "JavaScript: The Good Parts", authors: "Douglas Crockford", category: "Programming", description: "Mengupas fitur-fitur terbaik dari bahasa pemrograman JavaScript yang wajib dipahami oleh setiap web developer profesional.", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/5131OWtQv7L._SX379_BO1,204,203,200_.jpg", publishedDate: "2008-05-01", infoLink: "#" },
-            { id: "b3", title: "You Don't Know JS Yet", authors: "Kyle Simpson", category: "Programming", description: "Buku seri legendaris yang membahas cara kerja mesin asynchronous, scope, closure, dan objek internal JavaScript secara menyeluruh.", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/41T5H8u7fUL._SX331_BO1,204,203,200_.jpg", publishedDate: "2020-01-25", infoLink: "#" },
-            { id: "b4", title: "Clean Code", authors: "Robert C. Martin", description: "Panduan menulis kode yang rapi, efisien, mudah dibaca, dan mudah dirawat dalam pengembangan software berskala besar.", category: "Programming", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/41xShbXbyZL._SX376_BO1,204,203,200_.jpg", publishedDate: "2008-08-01", infoLink: "#" },
-            { id: "b5", title: "Design Patterns", authors: "Erich Gamma", description: "Solusi-solusi standar arsitektur pemrograman berorientasi objek (OOP) untuk mengatasi masalah software yang sering muncul.", category: "Programming", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/51szb57QvXL._SX396_BO1,204,203,200_.jpg", publishedDate: "1994-10-31", infoLink: "#" },
-            { id: "b6", title: "Introduction to Algorithms", authors: "Thomas H. Cormen", description: "Buku panduan komprehensif mengenai struktur data dan algoritma komputer yang menjadi fondasi dasar rekayasa perangkat lunak.", category: "Programming", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/41vOepSpAsL._SX373_BO1,204,203,200_.jpg", publishedDate: "2009-07-31", infoLink: "#" }
-        ];
-
-        const dataRekomendasi = [
-            { id: "r1", title: "Atomic Habits", authors: "James Clear", category: "Self Improvement", description: "Cara mudah dan terbukti untuk membangun kebiasaan baik dan menghilangkan kebiasaan buruk demi perubahan hidup yang drastis.", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/51-nXsSRfZL._SX329_BO1,204,203,200_.jpg", publishedDate: "2018-10-16", infoLink: "#" },
-            { id: "r2", title: "Filosofi Teras", authors: "Henry Manampiring", category: "Self Improvement", description: "Penerapan filsafat Yunani-Romawi kuno (Stoisisme) untuk menenangkan pikiran dan mental dalam menghadapi tantangan hidup modern.", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/41D-vWf9XLL._SX331_BO1,204,203,200_.jpg", publishedDate: "2018-11-26", infoLink: "#" },
-            { id: "r3", title: "Deep Work", authors: "Cal Newport", category: "Self Improvement", description: "Aturan dan panduan untuk tetap fokus secara mendalam di tengah dunia yang penuh dengan distraksi teknologi digital digital.", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/417yHQb9crL._SX331_BO1,204,203,200_.jpg", publishedDate: "2016-01-05", infoLink: "#" },
-            { id: "r4", title: "Start With Why", authors: "Simon Sinek", category: "Self Improvement", description: "Bagaimana para pemimpin besar menginspirasi semua orang untuk mengambil tindakan berdasarkan tujuan utama (Why).", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/516L-9NAsfL._SX324_BO1,204,203,200_.jpg", publishedDate: "2009-10-29", infoLink: "#" },
-            { id: "r5", title: "Mindset", authors: "Carol S. Dweck", category: "Self Improvement", description: "Mengungkap kekuatan pola pikir (growth mindset) dalam menentukan kesuksesan belajar, berbisnis, dan relasi kehidupan.", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/51j5GfR7YBL._SX324_BO1,204,203,200_.jpg", publishedDate: "2006-02-28", infoLink: "#" },
-            { id: "r6", title: "Grit", authors: "Angela Duckworth", category: "Self Improvement", description: "Mengapa rahasia pencapaian luar biasa bukanlah bakat, melainkan perpaduan antara hasrat (passion) dan kegigihan (perseverance).", thumbnail: "https://images-na.ssl-images-amazon.com/images/I/41K99-Qf7LL._SX324_BO1,204,203,200_.jpg", publishedDate: "2016-05-03", infoLink: "#" }
+        const dataBukuIndonesia = [
+            { id: "id1", title: "Laskar Pelangi", authors: "Andrea Hirata", category: "Novel Indonesia", description: "Kisah inspiratif sepuluh anak dari keluarga miskin di Belitung yang berjuang menempuh pendidikan di sekolah Muhammadiyah di tengah segala keterbatasan.", thumbnail: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=400&q=80", publishedDate: "2005-01-01", infoLink: "#" },
+            { id: "id2", title: "Bumi Manusia", authors: "Pramoedya Ananta Toer", category: "Sastra Sejarah", description: "Kisah roman sejarah berlatar kebangkitan nasional pada masa kolonial Belanda, mempertemukan pemikiran Minke dengan Annelies dan Nyai Ontosoroh.", thumbnail: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=400&q=80", publishedDate: "1980-08-25", infoLink: "#" },
+            { id: "id3", title: "Filosofi Keras & Teras", authors: "Henry Manampiring", category: "Self Improvement", description: "Panduan praktis berdamai dengan emosi negatif, mengasah ketangguhan mental menggunakan landasan stoisisme kuno yang disesuaikan kondisi Indonesia.", thumbnail: "https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?auto=format&fit=crop&w=400&q=80", publishedDate: "2018-11-26", infoLink: "#" },
+            { id: "id4", title: "Laut Bercerita", authors: "Leila S. Chudori", category: "Novel Indonesia", description: "Sebuah catatan kelam tentang kehilangan, penyuaraan hak kemanusiaan, serta perjuangan keluarga para aktivis mahasiswa yang diculik tahun 1998.", thumbnail: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=400&q=80", publishedDate: "2017-10-12", infoLink: "#" },
+            { id: "id5", title: "Perahu Kertas", authors: "Dee Lestari", category: "Romance Indonesia", description: "Perjalanan pencarian jati diri, jalinan cinta, cita-cita, serta persahabatan antara Kugy yang imajinatif dan Keenan yang artistik.", thumbnail: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=400&q=80", publishedDate: "2009-08-01", infoLink: "#" },
+            { id: "id6", title: "Pulang", authors: "Leila S. Chudori", category: "Sastra Sejarah", description: "Kisah drama keluarga eksil politik Indonesia di Paris pasca kejadian 1965 yang merindukan tanah kelahiran namun terasing dari negaranya.", thumbnail: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=400&q=80", publishedDate: "2012-12-12", infoLink: "#" },
+            { id: "id7", title: "Gadis Kretek", authors: "Ratih Kumala", category: "Novel Indonesia", description: "Penjelajahan sejarah industri kretek di Indonesia, mengungkap jalinan cinta segitiga mendalam serta misteri keluarga pemilik pabrik.", thumbnail: "https://images.unsplash.com/photo-1495640388908-05fa85288e61?auto=format&fit=crop&w=400&q=80", publishedDate: "2012-03-01", infoLink: "#" },
+            { id: "id8", title: "Negeri 5 Menara", authors: "Ahmad Fuadi", category: "Inspiratif", description: "Kisah persahabatan enam santri dari berbagai daerah di pondok Madani, berkomitmen meraih mimpi global lewat mantra Man Jadda Wajada.", thumbnail: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=400&q=80", publishedDate: "2009-07-01", infoLink: "#" },
+            { id: "id9", title: "Cantik Itu Luka", authors: "Eka Kurniawan", category: "Realisme Magis", description: "Karya sastra luar biasa berlatar masa kolonial hingga pasca kemerdekaan, menceritakan garis keturunan Dewi Ayu penuh kutukan magis.", thumbnail: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=400&q=80", publishedDate: "2002-03-15", infoLink: "#" },
+            { id: "id10", title: "Ronggeng Dukuh Paruk", authors: "Ahmad Tohari", category: "Sastra Budaya", description: "Kisah cinta tragis antara Srintil seorang penari ronggeng legendaris dengan Rasus, berlatar pergolakan sosio-politik pedesaan Jawa.", thumbnail: "https://images.unsplash.com/photo-1506466010722-395cc2ea8775?auto=format&fit=crop&w=400&q=80", publishedDate: "1982-02-01", infoLink: "#" },
+            { id: "id11", title: "Sang Pemimpi", authors: "Andrea Hirata", category: "Novel Indonesia", description: "Buku kedua tetralogi laskar pelangi, mengisahkan kenakalan remaja SMA yang gigih mengejar impian beasiswa pendidikan ke Eropa.", thumbnail: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=400&q=80", publishedDate: "2006-07-01", infoLink: "#" },
+            { id: "id12", title: "Supernova: Ksatria, Puteri", authors: "Dee Lestari", category: "Fiksi Sains", description: "Eksplorasi fiksi ilmiah bercampur jalinan asmara romantis yang menggabungkan sains modern, filsafat, serta spiritualitas universal.", thumbnail: "https://images.unsplash.com/photo-1476275466078-4007374efbbe?auto=format&fit=crop&w=400&q=80", publishedDate: "2001-03-01", infoLink: "#" },
+            { id: "id13", title: "Aroma Karsa", authors: "Dee Lestari", category: "Misteri Fantasi", description: "Petualangan melacak keberadaan tanaman mitologi tanaman sakti berbekal indra penciuman luar biasa di dasar hutan belantara.", thumbnail: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&w=400&q=80", publishedDate: "2018-03-16", infoLink: "#" },
+            { id: "id14", title: "Dilan: Dia adalah Dilanku", authors: "Pidi Baiq", category: "Romance Indonesia", description: "Romantika manis remaja SMA Bandung tahun 1990 antara Milea dengan Dilan, anggota geng motor yang gemar merayu dengan cara unik.", thumbnail: "https://images.unsplash.com/photo-1491841573178-8af01f1e45ef?auto=format&fit=crop&w=400&q=80", publishedDate: "2014-03-01", infoLink: "#" },
+            { id: "id15", title: "Sabtu Bersama Bapak", authors: "Adhitya Mulya", category: "Drama Keluarga", description: "Pesan-pesan kehidupan berharga dari seorang bapak yang direkam sebelum wafat untuk mendampingi tumbuh kembang anak lelakinya.", thumbnail: "https://images.unsplash.com/photo-1474932430478-367db26836c1?auto=format&fit=crop&w=400&q=80", publishedDate: "2014-06-01", infoLink: "#" },
+            { id: "id16", title: "Critical Eleven", authors: "Ika Natassa", category: "Romance Indonesia", description: "Mengupas dinamika hubungan pernikahan modern, menitikberatkan fase kritis 11 menit pertama dan terakhir saat berinteraksi.", thumbnail: "https://images.unsplash.com/photo-1518373386927-85ae07d17606?auto=format&fit=crop&w=400&q=80", publishedDate: "2015-08-01", infoLink: "#" },
+            { id: "id17", title: "Saman", authors: "Ayu Utami", category: "Sastra Kontemporer", description: "Novel pemenang penghargaan yang mendobrak tabu sastra, mengisahkan gerakan aktivisme, spiritualitas, serta kebebasan berekspresi.", thumbnail: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=400&q=80", publishedDate: "1998-04-01", infoLink: "#" },
+            { id: "id18", title: "Hujan", authors: "Tere Liye", category: "Fiksi Ilmiah", description: "Kisah persahabatan dan cinta berlatar dunia masa depan distopia pasca bencana alam besar, membahas pengorbanan dan kenangan.", thumbnail: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=400&q=80", publishedDate: "2016-01-01", infoLink: "#" },
+            { id: "id19", title: "Bumi", authors: "Tere Liye", category: "Fantasi Petualangan", description: "Awal perjalanan petualangan dunia paralel tiga remaja berkekuatan unik menjelajahi klan-klan tersembunyi yang canggih.", thumbnail: "https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?auto=format&fit=crop&w=400&q=80", publishedDate: "2014-01-15", infoLink: "#" },
+            { id: "id20", title: "Dikta & Hukum", authors: "Dhia'an Farah", category: "Romance Indonesia", description: "Kisah haru penuh emosi persahabatan sejak kecil yang berubah menjadi ikatan perjodohan di tengah perjuangan melawan takdir medis.", thumbnail: "https://images.unsplash.com/photo-1463320360370-4be29475328b?auto=format&fit=crop&w=400&q=80", publishedDate: "2021-05-10", infoLink: "#" }
         ];
 
         function switchPage(page) {
@@ -137,19 +142,27 @@
             searchSection.classList.add('hidden');
 
             if (page === 'beranda') {
-                currentLoadedBooks = dataBeranda;
+                currentLoadedBooks = [...dataBukuIndonesia];
+                shuffleArray(currentLoadedBooks); // Otomatis acak susunan buku saat di-refresh / klik Beranda
                 displayBooks(currentLoadedBooks);
             } else if (page === 'rekomendasi') {
-                currentLoadedBooks = dataRekomendasi;
+                currentLoadedBooks = dataBukuIndonesia.filter((_, index) => index % 2 === 0);
                 displayBooks(currentLoadedBooks);
             } else if (page === 'pencarian') {
                 searchSection.classList.remove('hidden');
-                bookContainer.innerHTML = ``;
+                bookContainer.innerHTML = `<div class="col-span-full text-center text-gray-500 py-10">Ketik nama buku Indonesia di atas (Contoh: Laskar Pelangi, Tere Liye, Bumi Manusia)</div>`;
             } else if (page === 'favorit') {
                 currentLoadedBooks = favoriteBooks;
                 displayBooks(favoriteBooks);
             }
             updateFavBadge();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
         }
 
         function displayBooks(books) {
@@ -158,6 +171,7 @@
             bookContainer.classList.remove('hidden');
 
             if (books.length === 0) {
+                bookContainer.innerHTML = `<div class="col-span-full text-center text-gray-500 py-10">Tidak ada koleksi buku yang sesuai.</div>`;
                 return;
             }
 
@@ -168,8 +182,8 @@
                 card.setAttribute('onclick', `openModal('${book.id}')`);
 
                 card.innerHTML = `
-                    <div class="h-64 bg-gray-100 flex items-center justify-center p-6">
-                        <img src="${book.thumbnail}" alt="${book.title}" class="h-full object-contain shadow-lg rounded">
+                    <div class="h-64 bg-gray-100 flex items-center justify-center relative overflow-hidden">
+                        <img src="${book.thumbnail}" alt="${book.title}" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
                     </div>
                     <div class="p-5 flex flex-col flex-grow">
                         <span class="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-1">${book.category}</span>
@@ -183,7 +197,7 @@
         }
 
         function openModal(id) {
-            const book = currentLoadedBooks.find(b => b.id === id) || favoriteBooks.find(b => b.id === id);
+            const book = dataBukuIndonesia.find(b => b.id === id) || favoriteBooks.find(b => b.id === id);
             if (!book) return;
 
             const year = book.publishedDate.substring(0, 4);
@@ -261,33 +275,25 @@
             }
         }
 
-        function searchLocalBooks(query) {
-            const lowerQuery = query.toLowerCase();
-            const allBooks = [...dataBeranda, ...dataRekomendasi, ...favoriteBooks];
+        function searchLocalBooks() {
+            const query = searchInput.value.trim().toLowerCase();
+            if (!query) {
+                bookContainer.innerHTML = `<div class="col-span-full text-center text-gray-500 py-10">Silakan isi kata kunci pencarian buku terlebih dahulu.</div>`;
+                return;
+            }
             
-            const uniqueBooks = Array.from(new Map(allBooks.map(item => [item.id, item])).values());
-            
-            currentLoadedBooks = uniqueBooks.filter(book => 
-                book.title.toLowerCase().includes(lowerQuery) || 
-                book.authors.toLowerCase().includes(lowerQuery)
+            currentLoadedBooks = dataBukuIndonesia.filter(book => 
+                book.title.toLowerCase().includes(query) || 
+                book.authors.toLowerCase().includes(query) ||
+                book.category.toLowerCase().includes(query)
             );
             
             displayBooks(currentLoadedBooks);
-            if(currentLoadedBooks.length === 0) {
-                bookContainer.innerHTML = `<div class="col-span-full text-center text-gray-500 py-10">Buku tidak ditemukan di dalam sistem data.</div>`;
-            }
         }
 
-        searchBtn.addEventListener('click', () => {
-            const query = searchInput.value.trim();
-            if (query) searchLocalBooks(query);
-        });
-
+        searchBtn.addEventListener('click', searchLocalBooks);
         searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const query = searchInput.value.trim();
-                if (query) searchLocalBooks(query);
-            }
+            if (e.key === 'Enter') searchLocalBooks();
         });
 
         switchPage('beranda');
